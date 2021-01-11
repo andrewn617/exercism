@@ -16,14 +16,22 @@ def print_line(character)
   puts "\n" + character * 80 + "\n"
 end
 
+def test_path(path)
+  if path.include?("_test.rb")
+    path
+  elsif path.include?(".rb")
+    path.chomp(".rb") + "_test.rb"
+  end
+end
+
 watch(/(.*)(\.rb)/) do |match|
-  print_line('=')
   path = match[0]
+  print_line('=')
   puts "Processing file: #{path}..."
   #system "rubocop --auto-correct #{path}"
   print_line('-')
   puts "*" * 80
-  puts "Running #{path.chomp(".rb")}_test.rb"
-  system "ruby #{path.chomp(".rb")}_test.rb"
+  puts "Running #{test_path(path)}"
+  system "ruby #{test_path(path)}"
   puts 'Done.'
 end
