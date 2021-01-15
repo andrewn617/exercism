@@ -1,20 +1,30 @@
 class Luhn
-  def self.valid?(number)
-    number = number.delete(" ")
+  attr_reader :number_string
 
-    return false if number.length < 2
-    return false if number.match?(/[^\s\d]/)
+  def self.valid?(number_string)
+    new(number_string).valid?
+  end
 
-    digits = number.to_i.digits
+  def initialize(number_string)
+    @number_string = number_string.delete(" ")
+  end
 
-    digits << 0 if digits.size.odd?
+  def valid?
+    return false if number_string == "0"
+    return false if number_string.match?(/[^\s\d]/)
 
-    odds, evens = digits.each_slice(2).to_a.transpose
+    odds, evens = digits.partition.each_with_index { |_, i| i.even?}
 
     (odds.sum + double(evens).sum) % 10 == 0
   end
 
-  def self.double(numbers)
-    numbers.map { |number| number * 2 > 9 ? number * 2  - 9 : number * 2 }
+  private
+
+  def digits
+    @_digits ||= number_string.to_i.digits
+  end
+
+  def double(numbers)
+    numbers.map { |number| (number * 2).digits.sum }
   end
 end
